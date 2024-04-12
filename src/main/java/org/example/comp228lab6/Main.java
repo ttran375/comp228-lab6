@@ -15,7 +15,6 @@ import javafx.stage.Stage;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.ArrayList;
 
 public class Main extends Application {
     private Account account;
@@ -35,42 +34,36 @@ public class Main extends Application {
         grid.setVgap(10);
         grid.setPadding(new Insets(25, 25, 25, 25));
 
-        Label depositLabel = new Label("Deposit Amount:");
-        grid.add(depositLabel, 0, 0);
+        Label amountLabel = new Label("Amount:");
+        grid.add(amountLabel, 0, 0);
 
-        TextField depositTextField = new TextField();
-        grid.add(depositTextField, 1, 0);
-
-        Label withdrawLabel = new Label("Withdraw Amount:");
-        grid.add(withdrawLabel, 0, 1);
-
-        TextField withdrawTextField = new TextField();
-        grid.add(withdrawTextField, 1, 1);
+        TextField amountTextField = new TextField();
+        grid.add(amountTextField, 1, 0);
 
         Button depositButton = new Button("Deposit");
         HBox depositBox = new HBox(10);
         depositBox.setAlignment(Pos.BOTTOM_RIGHT);
         depositBox.getChildren().add(depositButton);
-        grid.add(depositBox, 1, 2);
+        grid.add(depositBox, 1, 1);
 
         Button withdrawButton = new Button("Withdraw");
         HBox withdrawBox = new HBox(10);
         withdrawBox.setAlignment(Pos.BOTTOM_RIGHT);
         withdrawBox.getChildren().add(withdrawButton);
-        grid.add(withdrawBox, 1, 3);
+        grid.add(withdrawBox, 1, 2);
 
         // Event handling for buttons
         depositButton.setOnAction(e -> {
-            double amount = Double.parseDouble(depositTextField.getText());
+            double amount = Double.parseDouble(amountTextField.getText());
             executeTransaction("deposit", amount);
         });
 
         withdrawButton.setOnAction(e -> {
-            double amount = Double.parseDouble(withdrawTextField.getText());
+            double amount = Double.parseDouble(amountTextField.getText());
             executeTransaction("withdraw", amount);
         });
 
-        Scene scene = new Scene(grid, 400, 300);
+        Scene scene = new Scene(grid, 400, 200);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Account Test");
         primaryStage.show();
@@ -86,7 +79,6 @@ public class Main extends Application {
         }
     }
 
-
     @Override
     public void stop() {
         executorService.shutdown();
@@ -100,11 +92,9 @@ public class Main extends Application {
 class Account {
     private double balance;
 
-
     public Account(double balance) {
         this.balance = balance;
     }
-
 
     // Synchronized method to deposit money
     public synchronized void deposit(double amount) {
@@ -112,11 +102,7 @@ class Account {
         System.out.println("Deposit: " + amount + ", New Balance: " + balance);
     }
 
-
     // Synchronized method to withdraw money
-
-
-    // Inside the withdraw method of the Account class
     public synchronized void withdraw(double amount) {
         if (balance >= amount) {
             balance -= amount;
@@ -134,19 +120,16 @@ class Account {
     }
 }
 
-
 class Transaction implements Runnable {
     private Account account;
     private String type;
     private double amount;
-
 
     public Transaction(Account account, String type, double amount) {
         this.account = account;
         this.type = type;
         this.amount = amount;
     }
-
 
     public void run() {
         if (type.equals("deposit")) {
