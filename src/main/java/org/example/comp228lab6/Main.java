@@ -1,9 +1,11 @@
 package org.example.comp228lab6;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -75,9 +77,15 @@ public class Main extends Application {
     }
 
     private void executeTransaction(String type, double amount) {
-        Transaction transaction = new Transaction(account, type, amount);
-        executorService.execute(transaction);
+        try {
+            Transaction transaction = new Transaction(account, type, amount);
+            executorService.execute(transaction);
+        } catch (NumberFormatException e) {
+            // Handle the case where the user entered invalid input
+            System.out.println("Invalid input format. Please enter a valid number.");
+        }
     }
+
 
     @Override
     public void stop() {
@@ -106,12 +114,22 @@ class Account {
 
 
     // Synchronized method to withdraw money
+
+
+    // Inside the withdraw method of the Account class
     public synchronized void withdraw(double amount) {
         if (balance >= amount) {
             balance -= amount;
             System.out.println("Withdraw: " + amount + ", New Balance: " + balance);
         } else {
-            System.out.println("Insufficient balance for withdrawal.");
+            // Display an alert to notify the user of insufficient balance
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Insufficient Balance");
+                alert.setHeaderText(null);
+                alert.setContentText("Insufficient balance for withdrawal.");
+                alert.showAndWait();
+            });
         }
     }
 }
